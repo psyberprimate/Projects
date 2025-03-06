@@ -10,7 +10,7 @@ class UserInterface():
     WHITE_TURN_MSG = "White Player. Enter your move, for example: A2 to A3. To quit write 'quit'"
     BLACK_TURN_MSG = "Black Player. Enter your move, for example: A2 to A3. To quit write 'quit'"
     TURN_INPUT = "Starting tile, End tile: "
-    INCORRECT_MSG = "Incorrect input: Please provide commands in format: B1 to C4 (column/row)"
+    INCORRECT_MSG = "Incorrect input: Please provide commands in format: column/row to column/row"
 
     def __init__(self):
         self.OPTIONS = {"1": self.play_chess,
@@ -79,9 +79,8 @@ class UserInterface():
             if player_input.lower() == "quit":
                 break
             try:
-                p_piece, t_tile = UserInterface.parse_input(
-                    player_input)
-            except (IndexError, ValueError) as _:
+                p_piece, t_tile = UserInterface.parse_input(player_input)
+            except (IndexError, ValueError, TypeError) as _:
                 print(UserInterface.INCORRECT_MSG)
             else:
                 p_color = "W" if turn_white else "B"
@@ -117,10 +116,12 @@ class UserInterface():
         end_row = int(destination[1])-1
         letters = {"a": 0, "b": 1, "c": 2, "d": 3,
                    "e": 4, "f": 5, "g": 6, "h": 7}
-
         # match piece  and destination letters
         start_column = letters.get(piece[0].lower())
         end_column = letters.get(destination[0].lower())
+        # check start and end column got a match from letters{}
+        if (start_column or end_column) is None:
+            raise TypeError
 
         return ((start_row, start_column), (end_row, end_column))
 
